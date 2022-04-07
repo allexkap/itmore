@@ -1,10 +1,20 @@
 import itertools as it
-G0, X = [], [chr(ord('1')+i) for i in range(8)]
-for x in X: G0.extend([f'{x}{g}' for g in input(f'{x}: ')])
-G1 = list(map(lambda g: ''.join(g), it.product(*G0)))
-G2 = [''.join(sorted(set(g))) for g in G1]; G2.sort(key=lambda g: (len(g), g))
-G3 = [g for i, g in enumerate(G2) if all(set(k)-set(g) or i<=j for j, k in enumerate(G2))]
-print(f"({')*('.join('+'.join(g) for g in G0)})")
-print('+'.join('*'.join(g) for g in G3))
-print('\n'.join(' '.join(sorted(set(X)-set(g))) for g in G3))
-print(max(8-len(g) for g in G3))
+n, p = int(input('n: ')), ord('a')
+
+def DNF(G):
+    D = sorted([sorted(set(g)) for g in it.product(*G)], key=lambda l: (len(l), l))
+    return list(d for i, d in enumerate(D) if all(set(b)-set(d) or i<=j for j, b in enumerate(D)))
+E, V, S = [], [chr(p+i) for i in range(n)], set(range(n))
+for i in range(n-1): E.extend([i, V.index(v)] for v in input(f'{V[i]}: '))
+K = DNF(E)
+F = [sorted(S-set(k)) for k in K]
+C = [[j for j, f in enumerate(F) if i in f] for i in range(n)]
+X = DNF(C)
+
+show = lambda s, l: s.join(V[i] for i in l)
+print('*'.join(f"({show('+', e)})" for e in E))
+print('+'.join('*'.join(show('', k)) for k in K))
+print(' '.join(f"{show('', f)}{('✓', '')[len(f)<len(F[0])]}" for f in F), len(F[0]), sep=' | ')
+print('*'.join(f"({'+'.join(f'F{i+1}' for i in c)})" for c in C))
+print('+'.join('*'.join(f'F{i+1}' for i in c) for c in X))
+print(' '.join(show('', F[x]) for x in X[0]), len(X[0]), sep=' | ')
