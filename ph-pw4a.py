@@ -25,10 +25,9 @@ def update(frame):
     if not frame % 10:
         Fronts.append(get_front(position.copy()))
         ax.add_patch(Fronts[-1])
-    for i, front in enumerate(Fronts):
+    for front in Fronts:
         if not front.iter():
-            front.remove()
-            del Fronts[i]
+            Fronts.pop(0).remove()
 
 fig = plt.figure(tight_layout=True)
 ax = fig.subplots()
